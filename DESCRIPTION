@@ -1,0 +1,30 @@
+Package: fInstrument
+Type: Package
+Title: Package for performing generic calculations on Rmetrics instruments
+Version: 0.1
+Date: 2010-09-22
+Author: P. Henaff
+Maintainer: P. Henaff <henaff.iae@univ-paris1.fr>
+Description: The fInstrument class provides an abstraction layer over the
+    various types of financial claims available in Rmetrics. The class exposes
+    methods for computing NPV and the "greeks". With this class, you can
+    perform calculations on a portfolio of financial instruments, without
+    having to be concerned with the implementation details specific to each
+    kind of instrument.
+License: GPL(>=2)
+LazyLoad: yes
+Depends:
+    fOptions,
+    fExoticOptions,
+    fAsianOptions,
+    timeSeries,
+    empfin,
+    methods
+Collate:
+    'StandardBarrier.r'
+    'Asian.r'
+    'Binary.r'
+    'Vanilla.r'
+    'DataProvider.r'
+    'fInstrument.r'
+    'fInstrument-package.r'

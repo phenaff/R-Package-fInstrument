@@ -1,0 +1,26 @@
+\name{fInstrumentFactory}
+\alias{fInstrumentFactory}
+\title{fInstrument constructor}
+\usage{
+  fInstrumentFactory(type, quantity, params)
+}
+\arguments{
+  \item{type}{(char) the instrument type}
+
+  \item{quantity}{(numeric) the position}
+
+  \item{params}{(list) list of parameters specific to the
+  isntrument type}
+}
+\description{
+  Factory method for constructing objects of type
+  fInstrument
+}
+\examples{
+a <- fInstrumentFactory("vanilla", quantity=1,
+                 params=list(cp='c', strike=100,
+                 dtExpiry=as.timeDate('01-jan-2011'),
+                 underlying='IBM',
+                 discountRef='USD.LIBOR', trace=FALSE))
+}
+
