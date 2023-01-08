@@ -1,7 +1,8 @@
 library(fInstrument)
+library(lubridate)
    
-dtExpiry <- as.timeDate('01-jan-2011')
-dtCalc <- as.timeDate('01-jan-2010')
+dtExpiry <- dmy('01-jan-2011')
+dtCalc <- dmy('01-jan-2010')
 
 underlying <- 'IBM'
 K<-100
@@ -11,7 +12,7 @@ a <- fInstrumentFactory("vanilla", quantity=1,
                   params=list(cp='c', strike=K,
                   dtExpiry=dtExpiry, 
 		          underlying=underlying,
-                  discountRef='USD.LIBOR', trace=F))
+                  discountRef='USD.LIBOR', trace=TRUE))
 
 # market data in default environment
 base.env <- DataProvider()
@@ -55,3 +56,4 @@ sb <- fInstrumentFactory("StandardBarrier", quantity=1,
 
 # Compute NPV under base scenario
 getValue(sb, 'Price', dtCalc, base.env)
+

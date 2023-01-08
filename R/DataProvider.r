@@ -55,11 +55,9 @@ setMethod(f='getData',
           definition=function(object, instrument, phenomenon, dtObs) {
   key = paste(instrument,'-',phenomenon, sep='')
   ts <- get(key, envir=as.environment(object))
-  # print(ts)
-  t <- time(ts)
-  indx <- as.numeric(t) <= as.numeric(dtObs)
+  # find the most recent observation <= dtObs
+  indx <- time(ts) <= dtObs
   tt <- tail(t[indx], n=1)
-  # print(tt)
   as.vector(ts[tt,])
 })
 

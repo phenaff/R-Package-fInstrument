@@ -15,10 +15,14 @@
 #'	\item{trace [boolean]}{print trace?}
 #' }
 #' @return an object of type \code{\linkS4class{fInstrument}}
-#'
+#' 
 #' @examples
-#' v <- Vanilla(q=1, params=list(cp='c', strike=100, dtExpiry=as.timeDate('01-jan-2011'),
-#' underlying='IBM', discountRef='USD-LIBOR', trace=FALSE))
+#' a <- fInstrumentFactory("vanilla", quantity=1,
+#'                  params=list(cp='c', strike=100,
+#'                  dtExpiry=dmy('01-jan-2011'), 
+#'                  underlying='IBM',
+#'                  discountRef='USD.LIBOR', trace=FALSE))
+#' 
 #' @export
 
 Vanilla <- function(q, params) {
@@ -35,39 +39,39 @@ getP <- function(dtCalc, env) {
   Spot <- getData(env, Underlying, 'Price', dtCalc)
   s <- getData(env, Underlying, 'ATMVol', dtCalc)
   r <- getData(env, df, 'Yield', dtCalc)
-  y <- getData(env, Underlying, 'DivYield', dtCalc)
+  b <- getData(env, Underlying, 'DivYield', dtCalc)
   t <- tDiff(dtCalc, dtExpiry)
   if (trace) {
-    print(paste('Calling GBSOption with Spot=', Spot, 'Strike=', Strike, 't=', t, 'r=', r, 'y=', y, 'sigma=', s))
+    print(paste('Calling GBSOption with Spot=', Spot, 'Strike=', Strike, 't=', t, 'r=', r, 'b=', b, 'sigma=', s))
     }
-  GBSOption(TypeFlag=cp, S=Spot, X=Strike, Time=t, r=r, b=r-y, sigma=s)@price
+  GBSOption(TypeFlag=cp, S=Spot, X=Strike, Time=t, r=r, b=b, sigma=s)@price
 }
 
 getD <- function(dtCalc, env) {
   Spot <- getData(env, Underlying, 'Price', dtCalc)
   s <- getData(env, Underlying, 'ATMVol', dtCalc)
   r <- getData(env, df, 'Yield', dtCalc)
-  y <- getData(env, Underlying, 'DivYield', dtCalc)
+  b <- getData(env, Underlying, 'DivYield', dtCalc)
   t <- tDiff(dtCalc, dtExpiry)
-  GBSGreeks(Selection="delta", TypeFlag=cp, S=Spot, X=Strike, Time=t, r=r, b=r-y, sigma=s)
+  GBSGreeks(Selection="delta", TypeFlag=cp, S=Spot, X=Strike, Time=t, r=r, b=b, sigma=s)
 }
 
 getG <- function(dtCalc, env) {
   Spot <- getData(env, Underlying, 'Price', dtCalc)
   s <- getData(env, Underlying, 'ATMVol', dtCalc)
   r <- getData(env, df, 'Yield', dtCalc)
-  y <- getData(env, Underlying, 'DivYield', dtCalc)
+  b <- getData(env, Underlying, 'DivYield', dtCalc)
   t <- tDiff(dtCalc, dtExpiry)
-  GBSGreeks(Selection="gamma", TypeFlag=cp, S=Spot, X=Strike, Time=t, r=r, b=r-y, sigma=s)
+  GBSGreeks(Selection="gamma", TypeFlag=cp, S=Spot, X=Strike, Time=t, r=r, b=b, sigma=s)
 }
 
 getV <- function(dtCalc, env) {
   Spot <- getData(env, Underlying, 'Price', dtCalc)
   s <- getData(env, Underlying, 'ATMVol', dtCalc)
   r <- getData(env, df, 'Yield', dtCalc)
-  y <- getData(env, Underlying, 'DivYield', dtCalc)
+  b <- getData(env, Underlying, 'DivYield', dtCalc)
   t <- tDiff(dtCalc, dtExpiry)
-  GBSGreeks(Selection="vega", TypeFlag=cp, S=Spot, X=Strike, Time=t, r=r, b=r-y, sigma=s)
+  GBSGreeks(Selection="vega", TypeFlag=cp, S=Spot, X=Strike, Time=t, r=r, b=b, sigma=s)
 }
 
 desc <- paste("Vanilla ", Underlying, cp, " @ ", Strike, " expiry: ", dtExpiry)

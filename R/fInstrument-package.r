@@ -1,4 +1,4 @@
-#' The fInstrument package is useful for performaing calculations on financial instruments defined in Rmetrics.
+#' The fInstrument package is useful for performing calculations on financial instruments defined in Rmetrics.
 #' @title fInstrument Package
 #' @author P. Henaff
 #' @docType package

@@ -24,11 +24,14 @@
 #' }
 #' @return an object of type \code{\linkS4class{fInstrument}}
 #'
-#' @examples
-#' v <- StandardBarrier(q=1, params=list(cp='cuo', strike=100, barrier=120,
-#'                      rebate=0, dtExpiry=as.timeDate('01-jan-2011'),
-#'                      underlying='IBM', discountRef='USD-LIBOR',
-#'                      trace=FALSE))
+#' @examples 
+#' a <- fInstrumentFactory("standardbarrier", quantity=1,
+#'                  params=list(cp='c', strike=100,
+#'                  barrier=120,
+#'                  dtExpiry=dmy('01-jan-2011'), 
+#'                  underlying='IBM',
+#'                  discountRef='USD.LIBOR', trace=FALSE))
+#'
 #' @export
 
 StandardBarrier <- function(q, params) {
@@ -46,11 +49,11 @@ getParams <- function(dtCalc, env) {
   spot <- getData(env, Underlying, 'Price', dtCalc)
   sigma <- getData(env, Underlying, 'ATMVol', dtCalc)
   r <- getData(env, df, 'Yield', dtCalc)
-  y <- getData(env, Underlying, 'DivYield', dtCalc)
+  b <- getData(env, Underlying, 'DivYield', dtCalc)
   Time <- tDiff(dtCalc, dtExpiry)
 
 
-  list(spot=spot, sigma=sigma, r=r, y=y, Time=Time)
+  list(spot=spot, sigma=sigma, r=r, b=b, Time=Time)
 }
   
 # Price
@@ -60,12 +63,12 @@ getP <- function(dtCalc, env) {
   if (trace) {
     print(paste('Calling StandardBarrier with spot=', p$spot,
                 'Strike=', Strike, 'Barrier=', barrier,
-                'Rebate=', rebate, 'r=', p$r, 'y=', p$y, 'sigma=', p$sigma))
+                'Rebate=', rebate, 'r=', p$r, 'b=', p$b, 'sigma=', p$sigma))
     }
 
   StandardBarrierOption(TypeFlag=cp, S=p$spot, X=Strike,
                   H=barrier, K=rebate, Time=p$Time, r=p$r,
-                  b=p$r-p$y, sigma=p$sigma)@price
+                  b=p$b, sigma=p$sigma)@price
 }
 
 # Delta by finite difference
@@ -75,15 +78,15 @@ getD <- function(dtCalc, env) {
   if (trace) {
     print(paste('Calling StandardBarrier with spot=', p$spot,
                 'Strike=', Strike, 'Barrier=', barrier,
-                'Rebate=', rebate, 'r=', p$r, 'y=', p$y, 'sigma=', p$sigma))
+                'Rebate=', rebate, 'r=', p$r, 'b=', p$b, 'sigma=', p$sigma))
     }
   h <- mean(p$spot)*.001
   pu <-   StandardBarrierOption(TypeFlag=cp, S=p$spot+h, X=Strike,
                   H=barrier, K=rebate, Time=p$Time, r=p$r,
-                  b=p$r-p$y, sigma=p$sigma)@price
+                  b=p$b, sigma=p$sigma)@price
   pd <-   StandardBarrierOption(TypeFlag=cp, S=p$spot-h, X=Strike,
                   H=barrier, K=rebate, Time=p$Time, r=p$r,
-                  b=p$r-p$y, sigma=p$sigma)@price
+                  b=p$b, sigma=p$sigma)@price
   (pu-pd)/(2*h)
   }
 
@@ -94,19 +97,19 @@ getG <- function(dtCalc, env) {
   if (trace) {
     print(paste('Calling StandardBarrier with spot=', p$spot,
                 'Strike=', Strike, 'Barrier=', barrier,
-                'Rebate=', rebate, 'r=', p$r, 'y=', p$y, 'sigma=', p$sigma))
+                'Rebate=', rebate, 'r=', p$r, 'b=', p$b, 'sigma=', p$sigma))
     }
   h <- mean(p$spot)*.001
   pu <-   StandardBarrierOption(TypeFlag=cp, S=p$spot+h, X=Strike,
                   H=barrier, K=rebate, Time=p$Time, r=p$r,
-                  b=p$r-p$y, sigma=p$sigma)@price
+                  b=p$b, sigma=p$sigma)@price
   pd <-   StandardBarrierOption(TypeFlag=cp, S=p$spot-h, X=Strike,
                   H=barrier, K=rebate, Time=p$Time, r=p$r,
-                  b=p$r-p$y, sigma=p$sigma)@price
+                  b=p$b, sigma=p$sigma)@price
 
   pm <-   StandardBarrierOption(TypeFlag=cp, S=p$spot, X=Strike,
                   H=barrier, K=rebate, Time=p$Time, r=p$r,
-                  b=p$r-p$y, sigma=p$sigma)@price
+                  b=p$b, sigma=p$sigma)@price
   (pu-2*pm+pd)/(h^2)
   }
 
@@ -117,16 +120,16 @@ getV <- function(dtCalc, env) {
   if (trace) {
     print(paste('Calling StandardBarrier with spot=', p$spot,
                 'Strike=', Strike, 'Barrier=', barrier,
-                'Rebate=', rebate, 'r=', p$r, 'y=', p$y, 'sigma=', p$sigma))
+                'Rebate=', rebate, 'r=', p$r, 'b=', p$b, 'sigma=', p$sigma))
     }
 
   dv <- .001
   pu <-   StandardBarrierOption(TypeFlag=cp, S=p$spot, X=Strike,
                   H=barrier, K=rebate, Time=p$Time, r=p$r,
-                  b=p$r-p$y, sigma=p$sigma+dv)@price
+                  b=p$b, sigma=p$sigma+dv)@price
   pd <-   StandardBarrierOption(TypeFlag=cp, S=p$spot, X=Strike,
                   H=barrier, K=rebate, Time=p$Time, r=p$r,
-                  b=p$r-p$y, sigma=p$sigma-dv)@price
+                  b=p$b, sigma=p$sigma-dv)@price
   (pu-pd)/(2*dv)
   }
 

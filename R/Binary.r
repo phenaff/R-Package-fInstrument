@@ -16,9 +16,14 @@
 #' }
 #' @return an object of type \code{\linkS4class{fInstrument}}
 #'
-#' @examples
-#' v <- Binary(q=1, params=list(cp='c', strike=100, dtExpiry=as.timeDate('01-jan-2011'),
-#' underlying='IBM', discountRef='USD-LIBOR', trace=FALSE))
+#' @examples 
+#' 
+#' a <- fInstrumentFactory("binary", quantity=1,
+#'                  params=list(cp='c', strike=100,
+#'                  dtExpiry=dmy('01-jan-2011'), 
+#'                  underlying='IBM',
+#'                  discountRef='USD.LIBOR', trace=FALSE))
+
 #' @export
 
 Binary <- function(q, params) {
@@ -36,12 +41,12 @@ getP <- function(dtCalc, env) {
   Spot <- getData(env, Underlying, 'Price', dtCalc)
   s <- getData(env, Underlying, 'ATMVol', dtCalc)
   r <- getData(env, df, 'Yield', dtCalc)
-  y <- getData(env, Underlying, 'DivYield', dtCalc)
+  b <- getData(env, Underlying, 'DivYield', dtCalc)
   t <- tDiff(dtCalc, dtExpiry)
   if (trace) {
-    print(paste('Calling CashOrNothingOption with Spot=', Spot, 'Strike=', Strike, 't=', t, 'r=', r, 'y=', y, 'sigma=', s))
+    print(paste('Calling CashOrNothingOption with Spot=', Spot, 'Strike=', Strike, 't=', t, 'r=', r, 'b=', b, 'sigma=', s))
     }
-  CashOrNothingOption(TypeFlag=cp, S=Spot, X=Strike, K=1, Time=t, r=r, b=r-y, sigma=s)@price
+  CashOrNothingOption(TypeFlag=cp, S=Spot, X=Strike, K=1, Time=t, r=r, b=b, sigma=s)@price
 }
 
 # Delta by finite difference
@@ -50,14 +55,14 @@ getD <- function(dtCalc, env) {
   Spot <- getData(env, Underlying, 'Price', dtCalc)
   s <- getData(env, Underlying, 'ATMVol', dtCalc)
   r <- getData(env, df, 'Yield', dtCalc)
-  y <- getData(env, Underlying, 'DivYield', dtCalc)
+  b <- getData(env, Underlying, 'DivYield', dtCalc)
   t <- tDiff(dtCalc, dtExpiry)
   if (trace) {
-    print(paste('Calling CashOrNothingOption with Spot=', Spot, 'Strike=', Strike, 't=', t, 'r=', r, 'y=', y, 'sigma=', s))
+    print(paste('Calling CashOrNothingOption with Spot=', Spot, 'Strike=', Strike, 't=', t, 'r=', r, 'b=', b, 'sigma=', s))
     }
   h <- mean(Spot)*.001
-  pu <- CashOrNothingOption(TypeFlag=cp, S=Spot+h, X=Strike, K=1, Time=t, r=r, b=r-y, sigma=s)@price
-  pd <- CashOrNothingOption(TypeFlag=cp, S=Spot-h, X=Strike, K=1, Time=t, r=r, b=r-y, sigma=s)@price
+  pu <- CashOrNothingOption(TypeFlag=cp, S=Spot+h, X=Strike, K=1, Time=t, r=r, b=b, sigma=s)@price
+  pd <- CashOrNothingOption(TypeFlag=cp, S=Spot-h, X=Strike, K=1, Time=t, r=r, b=b, sigma=s)@price
   (pu-pd)/(2*h)
   }
 
@@ -67,15 +72,15 @@ getG <- function(dtCalc, env) {
   Spot <- getData(env, Underlying, 'Price', dtCalc)
   s <- getData(env, Underlying, 'ATMVol', dtCalc)
   r <- getData(env, df, 'Yield', dtCalc)
-  y <- getData(env, Underlying, 'DivYield', dtCalc)
+  b <- getData(env, Underlying, 'DivYield', dtCalc)
   t <- tDiff(dtCalc, dtExpiry)
   if (trace) {
-    print(paste('Calling CashOrNothingOption with Spot=', Spot, 'Strike=', Strike, 't=', t, 'r=', r, 'y=', y, 'sigma=', s))
+    print(paste('Calling CashOrNothingOption with Spot=', Spot, 'Strike=', Strike, 't=', t, 'r=', r, 'b=', b, 'sigma=', s))
     }
   h <- mean(Spot)*.001
-  p <- CashOrNothingOption(TypeFlag=cp, S=Spot, X=Strike, K=1, Time=t, r=r, b=r-y, sigma=s)@price
-  pu <- CashOrNothingOption(TypeFlag=cp, S=Spot+h, X=Strike, K=1, Time=t, r=r, b=r-y, sigma=s)@price
-  pd <- CashOrNothingOption(TypeFlag=cp, S=Spot-h, X=Strike, K=1, Time=t, r=r, b=r-y, sigma=s)@price
+  p <- CashOrNothingOption(TypeFlag=cp, S=Spot, X=Strike, K=1, Time=t, r=r, b=b, sigma=s)@price
+  pu <- CashOrNothingOption(TypeFlag=cp, S=Spot+h, X=Strike, K=1, Time=t, r=r, b=b, sigma=s)@price
+  pd <- CashOrNothingOption(TypeFlag=cp, S=Spot-h, X=Strike, K=1, Time=t, r=r, b=b, sigma=s)@price
   (pu-2*p+pd)/(h^2)
   }
 
@@ -85,14 +90,14 @@ getV <- function(dtCalc, env) {
   Spot <- getData(env, Underlying, 'Price', dtCalc)
   s <- getData(env, Underlying, 'ATMVol', dtCalc)
   r <- getData(env, df, 'Yield', dtCalc)
-  y <- getData(env, Underlying, 'DivYield', dtCalc)
+  b <- getData(env, Underlying, 'DivYield', dtCalc)
   t <- tDiff(dtCalc, dtExpiry)
   if (trace) {
     print(paste('Calling CashOrNothingOption with Spot=', Spot, 'Strike=', Strike, 't=', t, 'r=', r, 'b=', b, 'sigma=', s))
     }
   dv <- .001
-  pu <- CashOrNothingOption(TypeFlag=cp, S=Spot, X=Strike, K=1, Time=t, r=r, b=r-y, sigma=s+dv)@price
-  pd <- CashOrNothingOption(TypeFlag=cp, S=Spot, X=Strike, K=1, Time=t, r=r, b=r-y, sigma=s-dv)@price
+  pu <- CashOrNothingOption(TypeFlag=cp, S=Spot, X=Strike, K=1, Time=t, r=r, b=b, sigma=s+dv)@price
+  pd <- CashOrNothingOption(TypeFlag=cp, S=Spot, X=Strike, K=1, Time=t, r=r, b=b, sigma=s-dv)@price
   (pu-pd)/(2*dv)
   }
 

@@ -31,7 +31,9 @@ NULL
 #' @slot desc a description of the instrument
 #'
 #' @examples
-#' dtExpiry <- as.timeDate('01-jan-2011')
+#' library(lubridate)
+#' 
+#' dtExpiry <- dmy('01-jan-2011')
 #' underlying <- 'IBM'
 #' K<-100
 #' a <- fInstrumentFactory("vanilla", quantity=1,
@@ -95,7 +97,7 @@ setMethod(f="getValue", signature=signature("fInstrument"),
 #' @examples
 #' a <- fInstrumentFactory("vanilla", quantity=1,
 #'                  params=list(cp='c', strike=100,
-#'                  dtExpiry=as.timeDate('01-jan-2011'), 
+#'                  dtExpiry=dmy('01-jan-2011'), 
 #'                  underlying='IBM',
 #'                  discountRef='USD.LIBOR', trace=FALSE))
 #' @export
