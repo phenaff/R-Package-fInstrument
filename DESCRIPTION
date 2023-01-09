@@ -11,7 +11,7 @@ Description: The fInstrument class provides an abstraction layer over the variou
  instruments, without having to be concerned with the implementation details specific to each kind of instrument.
 License: GPL(>=2)
 LazyLoad: yes
-Depends: fOptions, fExoticOptions, fAsianOptions, timeSeries, lubridate, methods
+Depends: fOptions, fExoticOptions, fAsianOptions, timeSeries, timeDate, lubridate, methods
 Collate: 
     'Asian.r'
     'Binary.r'
