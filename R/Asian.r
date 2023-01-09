@@ -58,7 +58,8 @@ getP <- function(dtCalc, env) {
   # compute parameters that are time-dependent
   p <- getParams(dtCalc, env)
   if (trace) {
-    print(paste('Calling TurnbullWakemanAsianApproxOption with spot=', 
+    print(paste('Calling TurnbullWakemanAsianApproxOption with ',
+                'c/p=', cp, 'spot=', 
                 p$spot, 'Strike=', Strike, 'Time=', p$Time, 
                 'time=', p$time, 'tau=', p$tau, 'r=', p$r, 
                 'b=', p$b, 'sigma=', p$sigma))
